@@ -36,6 +36,12 @@ option 'output' => (
 sub run {
   my ($self) = @_;
 
+  # 1.
+  my $dsn   = 'dbi:SQLite:dbname=skos2unimarc.db';
+  my $dbh   = DBI->connect( $dsn, '', '' );
+  my $store = RDF::Trine::Store::DBI->new( 'skos2unimarc', $dbh );
+  my $model = RDF::Trine::Model->new($store);
+
 }
 
 1;
