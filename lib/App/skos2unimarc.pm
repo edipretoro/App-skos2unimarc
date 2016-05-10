@@ -105,6 +105,50 @@ SPARQL
     }
   }
 
+  # 4.
+  foreach my $concept (sort keys %$concepts) {
+    my $marc_records = {};
+    my $record = [];
+
+    push @$record, ['LDR', '~', '~', '_', '00000nx  j2200000   45  '];
+
+    push @$record, ['001', '~', '~', '_', $concepts->{$concept}{id}];
+
+    push @$record, ['100', ' ', ' ', 'a', DateTime->now->ymd('') . 'afrey0103    ba0'];
+
+    push @$record, ['250', ' ', ' ', 'a', $concepts->{$concept}{prefLabel}];
+
+    if (defined( $concepts->{$concept}{scopeNote} )) {
+      push @$record, ['330', '1', ' ', 'a', $concepts->{$concept}{scopeNote}];
+    }
+
+    if (defined( $concepts->{$concept}{altLabel} )) {
+      foreach my $term (keys %{$concepts->{$concept}{altLabel}}) {
+        push @$record, ['450', ' ', ' ', 'a', $term];
+      }
+    }
+
+    if (defined( $concepts->{$concept}{related} )) {
+      foreach my $term (keys %{$concepts->{$concept}{related}}) {
+        push @$record, ['550', ' ', ' ', '3', $concepts->{$term}{id}, 'a', $concepts->{$term}{prefLabel}];
+      }
+    }
+
+    if (defined( $concepts->{$concept}{broader} )) {
+      foreach my $term (keys %{$concepts->{$concept}{broader}}) {
+        push @$record, ['550', ' ', ' ', '5', 'g', '3', $concepts->{$term}{id}, 'a', $concepts->{$term}{prefLabel}];
+      }
+    }
+
+    if (defined( $concepts->{$concept}{narrower} )) {
+      foreach my $term (keys %{$concepts->{$concept}{narrower}}) {
+        push @$record, ['550', ' ', ' ', '5', 'h', '3', $concepts->{$term}{id}, 'a', $concepts->{$term}{prefLabel}];
+      }
+    }
+
+    $marc_records->{record} = $record;
+    io( $self->output)->append( Dump( $marc_records ) );
+  }
 }
 
 1;
