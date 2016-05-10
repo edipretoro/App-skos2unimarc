@@ -42,6 +42,12 @@ sub run {
   my $store = RDF::Trine::Store::DBI->new( 'skos2unimarc', $dbh );
   my $model = RDF::Trine::Model->new($store);
 
+  # 2.
+  foreach my $file ( @{ $self->files } ) {
+    my $parser = RDF::Trine::Parser->guess_parser_by_filename( $file );
+    $parser->parse_file_into_model( "file://$file", $file, $model );
+  }
+
 }
 
 1;
