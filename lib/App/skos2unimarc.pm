@@ -33,4 +33,9 @@ option 'output' => (
     default  => sub { 'skos2unimarc.yml' },
 );
 
+sub run {
+  my ($self) = @_;
+
+}
+
 1;
