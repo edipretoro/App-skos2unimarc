@@ -151,4 +151,42 @@ SPARQL
   }
 }
 
+sub output_as_text {
+  my ( $concepts ) = @_;
+
+  foreach my $concept (keys %$concepts) {
+    print $concepts->{$concept}->{prefLabel}, "\n";
+
+    if (defined( $concepts->{$concept}{scopeNote} )) {
+      print "SN: ", $concepts->{$concept}{scopeNote}, $/;
+    }
+
+    if (defined( $concepts->{$concept}{broader} )) {
+      foreach my $term (keys %{$concepts->{$concept}{broader}}) {
+        print "TG: ", $concepts->{$term}{prefLabel}, $/;
+      }
+    }
+
+    if (defined( $concepts->{$concept}{narrower} )) {
+      foreach my $term (keys %{$concepts->{$concept}{narrower}}) {
+        print "TS: ", $concepts->{$term}{prefLabel}, $/;
+      }
+    }
+
+    if (defined( $concepts->{$concept}{related} )) {
+      foreach my $term (keys %{$concepts->{$concept}{related}}) {
+        print "TA: ", $concepts->{$term}{prefLabel}, $/;
+      }
+    }
+
+    if (defined( $concepts->{$concept}{altLabel} )) {
+      foreach my $term (keys %{$concepts->{$concept}{altLabel}}) {
+        print "EP: ", $term, $/;
+      }
+    }
+
+    print "\n";
+  }
+}
+
 1;
