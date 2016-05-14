@@ -158,6 +158,13 @@ sub output_as_unimarc {
   }
 }
 
+sub output_as_unimarc_yaml {
+  my ( $self, $record ) = @_;
+  my $marc_record = {};
+  $marc_record->{record} = $record;
+  Dump( $marc_record )
+}
+
 sub output_as_text {
   my ( $concepts ) = @_;
 
