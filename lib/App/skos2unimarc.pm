@@ -49,7 +49,7 @@ sub run {
   }
 
   # 3.
-  my $uri   = 'http://skos.um.es/unescothes/CS000';
+  my $uri   = 'http://skos.um.es/unescothes/CS000'; # TODO: create a method to get the scheme
   my $query = <<"SPARQL" . "\n}";
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
