@@ -16,6 +16,9 @@ use DBI;
 use IO::All;
 use YAML;
 
+use MARC::Record;
+use MARC::Field;
+
 option 'files' => (
     is       => 'ro',
     short    => 'f',
@@ -106,8 +109,13 @@ SPARQL
   }
 
   # 4.
+  $self->output_as_unimarc( $concepts );
+}
+
+sub output_as_unimarc {
+  my ( $self, $concepts ) = @_;
+
   foreach my $concept (sort keys %$concepts) {
-    my $marc_records = {};
     my $record = [];
 
     push @$record, ['LDR', '~', '~', '_', '00000nx  j2200000   45  '];
@@ -146,8 +154,7 @@ SPARQL
       }
     }
 
-    $marc_records->{record} = $record;
-    io( $self->output)->append( Dump( $marc_records ) );
+    io( $self->output)->append( $self->_raw_to_marc_record( $record ) );
   }
 }
 
@@ -187,6 +194,30 @@ sub output_as_text {
 
     print "\n";
   }
+}
+
+# function stolen from Catmandu::Exporter::MARC::Base
+sub _raw_to_marc_record {
+    my ($self,$data) = @_;
+    my $marc = MARC::Record->new();
+
+    for my $field (@$data) {
+        my ($tag, $ind1, $ind2, @data) = @$field;
+
+        if ($tag eq 'LDR') {
+            $marc->leader($data[1]);
+        }
+        elsif ($tag =~ /^00/) {
+            my $field = MARC::Field->new($tag,$data[1]);
+             $marc->append_fields($field);
+        }
+        else {
+            my $field = MARC::Field->new($tag, $ind1, $ind2, @data);
+            $marc->append_fields($field);
+        }
+    }
+
+    $marc;
 }
 
 1;
