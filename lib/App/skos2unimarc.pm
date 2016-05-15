@@ -34,7 +34,7 @@ option 'output' => (
     format   => 's',
     required => 0,
     doc      => 'Filename where to store the YAML version of the data.',
-    default  => sub { 'skos2unimarc.yml' },
+    default  => sub { 'skos2unimarc.mrc' },
 );
 
 sub run {
