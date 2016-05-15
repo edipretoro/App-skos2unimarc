@@ -2,6 +2,7 @@ package App::skos2unimarc;
 
 use strict;
 use warnings;
+use Carp;
 
 use Moo;
 use MooX::Options;
@@ -52,8 +53,25 @@ sub run {
   }
 
   # 3.
-  my $uri   = 'http://skos.um.es/unescothes/CS000'; # TODO: create a method to get the scheme
-  my $query = <<"SPARQL" . "\n}";
+  my $query = <<'SPARQL';
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT DISTINCT *
+WHERE {
+  ?uri a skos:ConceptScheme .
+}
+SPARQL
+
+  my $uri;
+  my $q     = RDF::Query->new($query);
+  my @res   = $q->execute($model);
+  if ( @res > 1 ) {
+    croak "More than one ConceptScheme in the file. We don't handle this use case for now."
+  } else {
+    $uri = $res[0]->{uri}->uri_value;
+  }
+
+  # 4.
+  $query = <<"SPARQL" . "\n}";
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX vann: <http://purl.org/vocab/vann/>
@@ -68,8 +86,8 @@ OPTIONAL { ?c skos:scopeNote ?sNote FILTER langMatches(lang(?sNote), 'fr') } .
 SPARQL
 
   my $concepts = {};
-  my $q   = RDF::Query->new($query);
-  my @res = $q->execute($model);
+  $q   = RDF::Query->new($query);
+  @res = $q->execute($model);
   foreach my $res (@res) {
     my $uri = $res->{c}->uri_value;
     $uri =~ /\/(C.*)$/;
