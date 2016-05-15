@@ -172,7 +172,7 @@ sub output_as_unimarc {
       }
     }
 
-    io( $self->output)->append( $self->_raw_to_marc_record( $record ) );
+    io( $self->output)->append( MARC::File::USMARC::encode( $self->_raw_to_marc_record( $record ) ) );
   }
 }
 
